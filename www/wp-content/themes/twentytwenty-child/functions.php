@@ -342,7 +342,7 @@ function send_email() {
             $subject = __('User add new ads', 'twentytwenty-child');
             $message = __('User add new ads', 'twentytwenty-child').', <a href="'.get_permalink($post_id).'">'.__('check it', 'twentytwenty-child').'</a>. ';
 
-            wp_schedule_single_event(time() + (60*$timeout), 'user_sending_mail_action', array(array('email' => $client_mail)) );
+            wp_schedule_single_event(time() + 60*$timeout, 'user_sending_mail_action', array(array('email' => $client_mail, 'time'=>time(), 'title' => $client_title, 'action' => 'user_sending_mail_action')) );
 
             if (empty($contact_to) || wp_mail($contact_to, $subject, $message, $headers) === false) {
                 echo json_encode(array('success' => 'true', 'sendmail' => 'false', 'message' => 'send_faild'));
@@ -368,12 +368,6 @@ function user_sending_mail($args) {
     'Reply-To: "Admin " <' . $admin . '>');
     $subject = __('Hi! Thanks for the posted ad! ', 'twentytwenty-child');
     $message = __('Thanks for the posted ad! If this ad passes moderation, it will definitely appear on the site.', 'twentytwenty-child');
-    
-    
-$f=@fopen("mybb_yevhen.log","a");
-@fputs($f,"===========.".date('Y.m.d H:i')." =========\n");
-@fputs($f,var_export($contact_to, true)."\n\n\n");
-@fclose($f); 
 
     wp_mail($contact_to, $subject, $message, $headers);
 }    
