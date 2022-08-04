@@ -1,8 +1,8 @@
 <?php
-// leave parent styles
-add_action('wp_enqueue_scripts', 'enqueue_parent_styles');
+// leave parent styles and add new
+add_action('wp_enqueue_scripts', 'enqueue_ev_scripts');
 
-function enqueue_parent_styles() {
+function enqueue_ev_scripts() {
     wp_enqueue_style('parent-style', get_template_directory_uri() . '/style.css');
 }
 
@@ -187,6 +187,7 @@ function multi_media_uploader_field($name, $value = '') {
 
 // Save Meta Box values.
 add_action('save_post', 'ads_meta_box_save');
+
 function ads_meta_box_save($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
         return;
@@ -203,11 +204,15 @@ function ads_meta_box_save($post_id) {
 
 // enqueue scripts image loadin on wp-admin
 add_action('admin_enqueue_scripts', 'load_media_files');
+
 function load_media_files() {
     wp_enqueue_media();
+    wp_register_script('sunset-admin-script', get_template_directory_uri() . '/js/news_admin.js', array('jquery'), '1.0.0', true);
+    wp_enqueue_script('sunset-admin-script');
 }
 
 add_filter('wp_nav_menu_args', 'my_add_menu_descriptions');
+
 function my_add_menu_descriptions($args) {
     $args['walker'] = new Menu_With_Description;
     return $args;
@@ -251,6 +256,8 @@ class Menu_With_Description extends Walker_Nav_Menu {
 
 }
 
+add_filter('attachment_fields_to_edit', 'custom_media_add_media_custom_field', null, 2);
+
 //function to add custom media field
 function custom_media_add_media_custom_field($form_fields, $post) {
     $field_value = get_post_meta($post->ID, 'custom_media_style', true);
@@ -265,7 +272,7 @@ function custom_media_add_media_custom_field($form_fields, $post) {
     return $form_fields;
 }
 
-add_filter('attachment_fields_to_edit', 'custom_media_add_media_custom_field', null, 2);
+add_action('edit_attachment', 'custom_media_save_attachment');
 
 //save your custom media field
 function custom_media_save_attachment($attachment_id) {
@@ -275,4 +282,97 @@ function custom_media_save_attachment($attachment_id) {
     }
 }
 
-add_action('edit_attachment', 'custom_media_save_attachment');
+add_action("wp_ajax_send_email", "send_email");
+add_action("wp_ajax_nopriv_send_email", "send_email");
+
+function send_email() {
+    $uploadOk = 1;
+    /* Забираем отправленные данные */
+    $client_title = $_POST['client_title'];
+    $client_mail = $_POST['client_mail'];
+    
+    $upload_dir = wp_upload_dir();
+    if ( wp_mkdir_p( $upload_dir['path'] ) ) {
+      $file = $upload_dir['path'] . '/' . $_FILES['attach_file']['name'];
+    }
+    else {
+      $file = $upload_dir['basedir'] . '/' . $_FILES['attach_file']['name'];
+    }    
+    
+    $wp_filetype = wp_check_filetype( $_FILES['attach_file']['name'], null );
+
+    // Allow certain file formats
+    if ($wp_filetype['type'] != "image/jpeg" && $wp_filetype['type'] != "image/png") {
+        //echo "Sorry, only  doc, docx or pdf files are allowed.";
+        $uploadOk = 0;
+    }
+    
+    // Check if $uploadOk is set to 0 by an error
+    if ($uploadOk == 0) {
+        //echo "Sorry, your file was not uploaded.";
+        // if everything is ok, try to upload file
+        echo json_encode(array('success' => 'false', 'sendmail' => 'false', 'message' => 'send_faild'));
+    } else {
+                    /// *******
+            echo '<!-- ' . var_export($_FILES['attach_file']['tmp_name'], true) .$file. ' -->';
+/// *******
+        if (move_uploaded_file($_FILES['attach_file']['tmp_name'], $file)) {
+
+            $attachment = array(
+                'post_mime_type' => $wp_filetype['type'],
+                'post_title' => sanitize_file_name( $_FILES['attach_file']['name'] ),
+                'post_content' => '',
+                'post_status' => 'inherit'
+            );
+
+            $attach_id = wp_insert_attachment( $attachment, $file );
+            require_once( ABSPATH . 'wp-admin/includes/image.php' );
+            $attach_data = wp_generate_attachment_metadata( $attach_id, $file );
+            wp_update_attachment_metadata( $attach_id, $attach_data );
+            
+            // insert the post and set the category
+            $post_id = wp_insert_post(array (
+                'post_type' => 'ads',
+                'post_title' => $client_title,
+                'post_status' => 'draft',
+                'comment_status' => 'closed',
+                'ping_status' => 'closed',
+            ));
+
+            if ($post_id) {
+                // insert post meta
+                $ads_imgs = get_post_meta(get_the_ID(), 'post_ads_img', true);
+                add_post_meta($post_id, 'post_ads_img', $attach_id);
+            }            
+            
+            $headers = array ('MIME-Version: 1.0',
+            'Content-Type: text/html; charset=UTF-8',
+            'From: "Apply form" <mail@test.com>',
+            'Reply-To: "User" <' . $client_mail . '>');
+            $subject = 'User add new ads';
+            $message = 'User add new ads, <a href="'.get_permalink($post_id).'">check it</a>. ';
+              
+            $contact_to = get_option('admin_email');
+            /// *******
+            echo '<!-- $contact_to' . var_export($contact_to, true) . ' -->';
+/// *******
+            if (!empty($contact_to) && wp_mail($contact_to, $subject, $message, $headers) === false) {
+                echo json_encode(array('success' => 'true', 'sendmail' => 'false', 'message' => 'send_faild'));
+            } else {
+                echo json_encode(array('success' => 'true', 'sendmail' => 'true', 'message' => 'send_success'));
+            }
+        } else {
+            echo json_encode(array('success' => 'false', 'upload' => 'false', 'message' => 'move_uploaded_file_error'));
+        }
+    }
+
+    die();
+}
+
+   // show wp_mail() errors
+    add_action( 'wp_mail_failed', 'onMailError', 10, 1 );
+    function onMailError( $wp_error ) {
+        echo "<pre>";
+        print_r($wp_error);
+        echo "</pre>";
+    } 

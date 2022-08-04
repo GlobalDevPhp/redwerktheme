@@ -21,7 +21,7 @@ body:not(.singular) main > article.ads-single-card:first-of-type {
     padding: 0px;
 }
 #ads-archive {
-    justify-content: space-between;
+    justify-content: flex-start;
     display: flex;
     flex-wrap: wrap;
 }

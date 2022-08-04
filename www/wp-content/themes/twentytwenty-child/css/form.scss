@@ -1,0 +1,141 @@
+.form-style {
+
+    padding: 30px 0;
+    background-color: #fff;
+    position: relative;
+    min-height: 400px;
+
+    h4 {
+        display: block;
+        margin-bottom: 20px;
+        font-size: 20px;
+    }
+
+    .form-view {
+        position: relative;
+        transition: opacity .3s, visibility .3s;
+    }
+
+    .progress,
+    .progress-bar,
+    .form-is-sending {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transition: opacity .3s, visibility .3s;
+    }
+    .form-is-sending {
+        visibility: hidden;
+        opacity: 0;        
+    }
+    .progress-bar {
+        width: 0%;
+        background-color: red;
+        text-align: center;
+    }
+    
+    .form-is-more {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: auto;
+        height: auto;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .3s, visibility .3s;
+    }
+
+    &.is-sending {
+        .form-view {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .form-is-sending {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+    &.is-sending-complete {
+        .form-view {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .form-is-more {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+}
+
+.form-field {
+    margin-bottom: 15px;
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="file"],
+    textarea {
+        border: 0;
+        border-bottom: 1px solid rgba(#000, .1);
+        transition: border-color .3s;
+        padding: 0 10px;
+        width: 100%;
+        box-sizing: border-box;
+        height: 40px;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        color: #444;
+        background: transparent;
+
+        &.rf-error {
+            border-color: #f04040;
+            color: #f04040;
+        }
+        &.rf-error::placeholder{
+            color: #f04040;
+        }
+        
+    }
+
+    textarea {
+        height: 100px;
+        padding: 10px;
+        overflow: auto;
+        resize: none;
+    }
+
+}
+
+.pa-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    z-index: 4;
+    margin: -25px 0 0 -25px;
+    border: 3px solid #ebebeb;
+    border-radius: 50%;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    animation: cssload-spin 1325ms infinite linear;
+}
+
+@keyframes cssload-spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@media screen and (min-width: 59.6875em) {
+    .form-style {
+        padding: 30px 10%;
+    }
+}
