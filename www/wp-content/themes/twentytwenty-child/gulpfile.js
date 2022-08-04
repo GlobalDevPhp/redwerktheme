@@ -21,17 +21,17 @@ var gulp         = require('gulp'), // Gulp
     
 gulp.task('scripts', function() {
     return gulp.src([
-        'www/wp-content/themes/twentytwenty-child/js/custom.js',
+        'js/custom.js',
        ])
     .pipe(jsmin())
     .pipe(rename('custom.min.js'))
-    .pipe(gulp.dest('./www/wp-content/themes/twentytwenty-child/js/'));
+    .pipe(gulp.dest('./js/'));
 });
 
 gulp.task('styles', function() {
-    return gulp.src([ 'www/wp-content/themes/twentytwenty-child/css/form.scss'])
+    return gulp.src([ 'css/form.scss'])
     .pipe(sass())
     .pipe(minifyCSS())
     .pipe(rename('form.min.css'))
-    .pipe(gulp.dest('./www/wp-content/themes/twentytwenty-child/css/'));
+    .pipe(gulp.dest('./css/'));
 });

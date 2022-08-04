@@ -287,7 +287,7 @@ add_action("wp_ajax_nopriv_send_email", "send_email");
 
 function send_email() {
     $uploadOk = 1;
-    /* Забираем отправленные данные */
+
     $client_title = $_POST['client_title'];
     $client_mail = $_POST['client_mail'];
     
@@ -313,9 +313,6 @@ function send_email() {
         // if everything is ok, try to upload file
         echo json_encode(array('success' => 'false', 'sendmail' => 'false', 'message' => 'send_faild'));
     } else {
-                    /// *******
-            echo '<!-- ' . var_export($_FILES['attach_file']['tmp_name'], true) .$file. ' -->';
-/// *******
         if (move_uploaded_file($_FILES['attach_file']['tmp_name'], $file)) {
 
             $attachment = array(
@@ -353,12 +350,11 @@ function send_email() {
             $message = 'User add new ads, <a href="'.get_permalink($post_id).'">check it</a>. ';
               
             $contact_to = get_option('admin_email');
-            /// *******
-            echo '<!-- $contact_to' . var_export($contact_to, true) . ' -->';
-/// *******
-            if (!empty($contact_to) && wp_mail($contact_to, $subject, $message, $headers) === false) {
+
+            if (empty($contact_to) || wp_mail($contact_to, $subject, $message, $headers) === false) {
                 echo json_encode(array('success' => 'true', 'sendmail' => 'false', 'message' => 'send_faild'));
             } else {
+                wp_schedule_event();
                 echo json_encode(array('success' => 'true', 'sendmail' => 'true', 'message' => 'send_success'));
             }
         } else {
