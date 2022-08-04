@@ -6,23 +6,27 @@ function enqueue_ev_scripts() {
     wp_enqueue_style('parent-style', get_template_directory_uri() . '/style.css');
 }
 
+add_action('after_setup_theme', 'twentytwentych_theme_setup');
+function twentytwentych_theme_setup(){
+    load_child_theme_textdomain( 'twentytwenty-child', get_stylesheet_directory() . '/languages' );
+}
+
 // Register ADS custom type
 add_action('init', 'register_post_type_ads');
-
 function register_post_type_ads() {
     $labels = array(
-        'name' => __('Advert'),
-        'singular_name' => __('Advert'),
-        'add_new' => __('Add advert'),
-        'add_new_item' => __('Add new advert'),
-        'edit_item' => __('Edit advert'),
-        'new_item' => __('New advert'),
-        'all_items' => __('All advert'),
-        'view_item' => __('View advert'),
-        'search_items' => __('Find advert'),
-        'not_found' => __('Adverts not found'),
-        'not_found_in_trash' => __('No adverts in trash'),
-        'menu_name' => __('Advert'),
+        'name' => __('Advert', 'twentytwenty-child'),
+        'singular_name' => __('Advert', 'twentytwenty-child'),
+        'add_new' => __('Add advert', 'twentytwenty-child'),
+        'add_new_item' => __('Add new advert', 'twentytwenty-child'),
+        'edit_item' => __('Edit advert', 'twentytwenty-child'),
+        'new_item' => __('New advert', 'twentytwenty-child'),
+        'all_items' => __('All advert', 'twentytwenty-child'),
+        'view_item' => __('View advert', 'twentytwenty-child'),
+        'search_items' => __('Find advert', 'twentytwenty-child'),
+        'not_found' => __('Adverts not found', 'twentytwenty-child'),
+        'not_found_in_trash' => __('No adverts in trash', 'twentytwenty-child'),
+        'menu_name' => __('Advert', 'twentytwenty-child'),
     );
     $args = array(
         'labels' => $labels,
@@ -56,7 +60,7 @@ function register_post_type_ads() {
 add_action('add_meta_boxes', 'ads_meta_box_add');
 
 function ads_meta_box_add() {
-    add_meta_box('ads-image-div', __('Advert images'), 'ads_metabox', 'ads', 'normal', 'low');
+    add_meta_box('ads-image-div', __('Advert images', 'twentytwenty-child'), 'ads_metabox', 'ads', 'normal', 'low');
 }
 
 function ads_metabox($post) {
@@ -91,7 +95,7 @@ function ads_metabox($post) {
 
     <table cellspacing="10" cellpadding="10">
         <tr>
-            <td><?php _e('Select advert images'); ?></td>
+            <td><?php _e('Select advert images', 'twentytwenty-child'); ?></td>
             <td>
                 <?php echo multi_media_uploader_field('post_ads_img', $ads_img); ?>
             </td>
@@ -106,8 +110,8 @@ function ads_metabox($post) {
 
                 var button = $(this),
                         custom_uploader = wp.media({
-                            title: '<?php _e('Insert image'); ?>',
-                            button: {text: '<?php _e('Use this image'); ?>'},
+                            title: '<?php _e('Insert image', 'twentytwenty-child'); ?>',
+                            button: {text: '<?php _e('Use this image', 'twentytwenty-child'); ?>'},
                             multiple: true
                         }).on('select', function () {
                     var attech_ids = '';
@@ -140,7 +144,7 @@ function ads_metabox($post) {
             });
 
             $('body').on('click', '.wc_multi_remove_image_button', function () {
-                $(this).hide().prev().val('').prev().addClass('button').html('<?php _e('Add Media'); ?>');
+                $(this).hide().prev().val('').prev().addClass('button').html('<?php _e('Add Media', 'twentytwenty-child'); ?>');
                 $(this).parent().find('ul').empty();
                 return false;
             });
@@ -164,7 +168,7 @@ function ads_metabox($post) {
 }
 
 function multi_media_uploader_field($name, $value = '') {
-    $image = '">' . __('Add Media');
+    $image = '">' . __('Add Media', 'twentytwenty-child');
     $image_str = '';
     $image_size = 'full';
     $display = 'none';
@@ -256,24 +260,7 @@ class Menu_With_Description extends Walker_Nav_Menu {
 
 }
 
-add_filter('attachment_fields_to_edit', 'custom_media_add_media_custom_field', null, 2);
-
-//function to add custom media field
-function custom_media_add_media_custom_field($form_fields, $post) {
-    $field_value = get_post_meta($post->ID, 'custom_media_style', true);
-
-    $form_fields['custom_media_style'] = array(
-        'value' => $field_value ? $field_value : '',
-        'label' => __('Style'),
-        'helps' => __('Enter your style'),
-        'input' => 'textarea'
-    );
-
-    return $form_fields;
-}
-
 add_action('edit_attachment', 'custom_media_save_attachment');
-
 //save your custom media field
 function custom_media_save_attachment($attachment_id) {
     if (isset($_REQUEST['attachments'][$attachment_id]['custom_media_style'])) {
@@ -286,10 +273,16 @@ add_action("wp_ajax_send_email", "send_email");
 add_action("wp_ajax_nopriv_send_email", "send_email");
 
 function send_email() {
+    // Timeout sending email to user in minutes
+    $timeout = 5;
+    
     $uploadOk = 1;
 
     $client_title = $_POST['client_title'];
-    $client_mail = $_POST['client_mail'];
+    $client_mail = sanitize_email($_POST['client_mail']);
+    
+    if (!filter_var($client_mail, FILTER_VALIDATE_EMAIL) || empty($client_title))
+        $uploadOk = 0;
     
     $upload_dir = wp_upload_dir();
     if ( wp_mkdir_p( $upload_dir['path'] ) ) {
@@ -311,7 +304,7 @@ function send_email() {
     if ($uploadOk == 0) {
         //echo "Sorry, your file was not uploaded.";
         // if everything is ok, try to upload file
-        echo json_encode(array('success' => 'false', 'sendmail' => 'false', 'message' => 'send_faild'));
+        echo json_encode(array('success' => 'false', 'sendmail' => 'false', 'message' => 'error_fields_or_type'));
     } else {
         if (move_uploaded_file($_FILES['attach_file']['tmp_name'], $file)) {
 
@@ -341,20 +334,20 @@ function send_email() {
                 $ads_imgs = get_post_meta(get_the_ID(), 'post_ads_img', true);
                 add_post_meta($post_id, 'post_ads_img', $attach_id);
             }            
-            
+            $contact_to = get_option('admin_email');
             $headers = array ('MIME-Version: 1.0',
             'Content-Type: text/html; charset=UTF-8',
-            'From: "Apply form" <mail@test.com>',
+            'From: "Apply form" <'.$contact_to.'.com>',
             'Reply-To: "User" <' . $client_mail . '>');
-            $subject = 'User add new ads';
-            $message = 'User add new ads, <a href="'.get_permalink($post_id).'">check it</a>. ';
-              
-            $contact_to = get_option('admin_email');
+            $subject = __('User add new ads', 'twentytwenty-child');
+            $message = __('User add new ads', 'twentytwenty-child').', <a href="'.get_permalink($post_id).'">'.__('check it', 'twentytwenty-child').'</a>. ';
+
+            wp_schedule_single_event(time() + (60*$timeout), 'user_sending_mail_action', array(array('email' => $client_mail)) );
 
             if (empty($contact_to) || wp_mail($contact_to, $subject, $message, $headers) === false) {
                 echo json_encode(array('success' => 'true', 'sendmail' => 'false', 'message' => 'send_faild'));
             } else {
-                wp_schedule_event();
+              
                 echo json_encode(array('success' => 'true', 'sendmail' => 'true', 'message' => 'send_success'));
             }
         } else {
@@ -365,10 +358,22 @@ function send_email() {
     die();
 }
 
-   // show wp_mail() errors
-    add_action( 'wp_mail_failed', 'onMailError', 10, 1 );
-    function onMailError( $wp_error ) {
-        echo "<pre>";
-        print_r($wp_error);
-        echo "</pre>";
-    } 
+add_action('user_sending_mail_action', 'user_sending_mail', 1, 1);
+function user_sending_mail($args) {
+    $contact_to = $args['email'];
+    $admin = get_option('admin_email');
+    $headers = array ('MIME-Version: 1.0',
+    'Content-Type: text/html; charset=UTF-8',
+    'From: "Apply form" <'.$admin.'>',
+    'Reply-To: "Admin " <' . $admin . '>');
+    $subject = __('Hi! Thanks for the posted ad! ', 'twentytwenty-child');
+    $message = __('Thanks for the posted ad! If this ad passes moderation, it will definitely appear on the site.', 'twentytwenty-child');
+    
+    
+$f=@fopen("mybb_yevhen.log","a");
+@fputs($f,"===========.".date('Y.m.d H:i')." =========\n");
+@fputs($f,var_export($contact_to, true)."\n\n\n");
+@fclose($f); 
+
+    wp_mail($contact_to, $subject, $message, $headers);
+}    
