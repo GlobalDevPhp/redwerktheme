@@ -1,0 +1,3 @@
+WP user:
+user: admin
+pass: Admin_123456

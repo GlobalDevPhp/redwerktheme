@@ -1,0 +1,93 @@
+/*
+Template: twentytwenty
+Theme Name: Twenty Twenty Child Theme
+Author: Evgene
+Author URI: https://wordpress.org/
+Description: Twenty Twenty Child Theme
+Text Domain: twentytwentychild
+*/
+
+.primary-menu .add_button a,
+.modal-menu .add_button a {
+    display:flex;
+}
+
+.primary-menu .add_button a img,
+.modal-menu .add_button a img{
+    padding-right: 10px;
+}
+
+body:not(.singular) main > article.ads-single-card:first-of-type {
+    padding: 0px;
+}
+#ads-archive {
+    justify-content: space-between;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#ads-archive article.ads-single-card{
+    width: 25%;
+    padding: 10px;
+    margin-top: 40px;
+}
+
+/* Position child elements relative to this element */
+#ads-archive .aspect-ratio-box {
+    position: relative;
+}
+
+/* Create a pseudo element that uses padding-bottom to take up space */
+#ads-archive .aspect-ratio-box::after {
+    display: block;
+    content: '';
+    /* 16:9 aspect ratio */
+    padding-bottom: 56.25%;
+}
+
+/* Image is positioned absolutely relative to the parent element */
+#ads-archive .aspect-ratio-box img {
+    /* Image should match parent box size */
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+#ads-archive header h2.entry-title{
+    max-height: 90px;
+    overflow: hidden;
+    font-size: 4rem;
+}
+
+@media screen and (max-width: 1023px) {
+    
+    #ads-archive article.ads-single-card{
+        width: 50%;
+    }
+    
+    #ads-archive header h2.entry-title{
+        max-height: 70px;
+        overflow: hidden;
+        font-size: 3rem;
+    }
+    
+}
+
+@media screen and (max-width: 479px) {
+    
+    #ads-archive {
+        flex-direction: column;
+    }
+    
+    #ads-archive article.ads-single-card{
+        width: 100%;
+    }
+    
+    #ads-archive header h2.entry-title{
+        max-height: 70px;
+        overflow: hidden;
+        font-size: 3rem;
+    }
+    
+}
