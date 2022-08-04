@@ -1,0 +1,71 @@
+msgid ""
+msgstr ""
+
+msgid "Advert"
+msgstr "Объявление"
+
+msgid "Add advert"
+msgstr "Добавить объявление"
+
+msgid "Add new advert"
+msgstr "Добавить новое объявление"
+
+msgid "Edit advert"
+msgstr "Отредактировать объявление"
+
+msgid "All advert"
+msgstr "Все объявления"
+
+msgid "New advert"
+msgstr "Новое объявление"
+
+msgid "View advert"
+msgstr "Показать объявление"
+
+msgid "Find advert"
+msgstr "Найти объявление"
+
+msgid "Adverts not found"
+msgstr "Объявление не нейдено"
+
+msgid "No adverts in trash"
+msgstr "В мусорнике нет объявлений"
+
+msgid "Advert images"
+msgstr "Иллюстрация объявления"
+
+msgid "Select advert images"
+msgstr "Выберите иллюстрацию объявления"
+
+msgid "Insert image"
+msgstr "Вставить изображение"
+
+msgid "Use this image"
+msgstr "Использовать это изображение"
+
+msgid "Add Media"
+msgstr "Добавить медиа"
+
+msgid "User add new ads"
+msgstr "Пользователь добавил новое объявление"
+
+msgid "check it"
+msgstr "проверь его"
+
+msgid "Hi! Thanks for the posted ad!"
+msgstr "Привет! Спасибо за размещенное объявление!"
+
+msgid "Thanks for the posted ad! If this ad passes moderation, it will definitely appear on the site."
+msgstr "Спасибо за размещенное объявление! Если это объявление пройдет модерацию, оно обязательно появится на сайте."
+
+msgid "Enter title"
+msgstr "Введите заголовок объявления"
+
+msgid "Your e-mail"
+msgstr "Ваш почтовый ящик"
+
+msgid "Image"
+msgstr "Укажите изображение"
+
+msgid "Send"
+msgstr "Отправить"

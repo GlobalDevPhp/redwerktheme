@@ -1,5 +1,5 @@
-languages/
-plugins/
-upgrade/
-uploads/
+/languages
+/plugins
+/upgrade
+/uploads
 index.php
