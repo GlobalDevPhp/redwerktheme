@@ -1,3 +1,21 @@
-WP user:
+Folders used:
+
+db_data     - empty folder for mysql database files
+mysql-dump  - sql damp of project. Prapair data for test.
+www         - files theme, fill wordpress files and mount to www/html folder on image
+
+For run docker:
+docker-compose up -d
+
+http://localhost:8080/wp-admin/ user: 
 user: admin
 pass: Admin_123456
+
+PHPmyAdmin
+http://0.0.0.0:8090/
+
+adverts archive page:
+http://localhost:8080/ads/
+
+Form:
+http://localhost:8080/add/
