@@ -1,4 +1,6 @@
 <?php
+require_once get_stylesheet_directory() . '/inc/class.Menu_With_Icons.php';
+
 // leave parent styles and add new
 add_action('wp_enqueue_scripts', 'enqueue_ev_scripts');
 
@@ -208,7 +210,6 @@ function ads_meta_box_save($post_id) {
 
 // enqueue scripts image loadin on wp-admin
 add_action('admin_enqueue_scripts', 'load_media_files');
-
 function load_media_files() {
     wp_enqueue_media();
     wp_register_script('sunset-admin-script', get_template_directory_uri() . '/js/news_admin.js', array('jquery'), '1.0.0', true);
@@ -216,48 +217,9 @@ function load_media_files() {
 }
 
 add_filter('wp_nav_menu_args', 'my_add_menu_descriptions');
-
 function my_add_menu_descriptions($args) {
-    $args['walker'] = new Menu_With_Description;
+    $args['walker'] = new Menu_With_Icons;
     return $args;
-}
-
-class Menu_With_Description extends Walker_Nav_Menu {
-
-    function start_el(&$output, $item, $depth = 0, $args = array(), $id = 0) {
-        global $wp_query;
-
-        $indent = ( $depth ) ? str_repeat("t", $depth) : '';
-
-        $class_names = $value = '';
-
-        $classes = empty($item->classes) ? array() : (array) $item->classes;
-
-        $class_names = join(' ', apply_filters('nav_menu_css_class', array_filter($classes), $item));
-        $class_names = ' class="' . esc_attr($class_names) . '"';
-
-        $output .= $indent . '<li id="menu-item-' . $item->ID . '"' . $value . $class_names . '>';
-
-        $attributes = !empty($item->attr_title) ? ' title="' . esc_attr($item->attr_title) . '"' : '';
-        $attributes .= !empty($item->target) ? ' target="' . esc_attr($item->target) . '"' : '';
-        $attributes .= !empty($item->xfn) ? ' rel="' . esc_attr($item->xfn) . '"' : '';
-        $attributes .= !empty($item->url) ? ' href="' . esc_attr($item->url) . '"' : '';
-
-        $item_output = $args->before;
-
-        // menu link output
-        $item_output .= '<a' . $attributes . '>';
-        if ($item->classes[0] == 'add_button')
-            $item_output .= '<img src="' . get_stylesheet_directory_uri() . '/images/plus.svg" alt="' . esc_attr($item->attr_title) . '" title="' . esc_attr($item->attr_title) . '">';
-        $item_output .= $args->link_before . apply_filters('the_title', $item->title, $item->ID) . $args->link_after;
-
-        // close menu link anchor
-        $item_output .= '</a>';
-        $item_output .= $args->after;
-
-        $output .= apply_filters('walker_nav_menu_start_el', $item_output, $item, $depth, $args);
-    }
-
 }
 
 add_action('edit_attachment', 'custom_media_save_attachment');
