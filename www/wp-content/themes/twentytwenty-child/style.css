@@ -48,6 +48,7 @@ body:not(.singular) main > article.ads-single-card:first-of-type {
 /* Image is positioned absolutely relative to the parent element */
 #ads-archive .aspect-ratio-box img {
     /* Image should match parent box size */
+    object-fit: cover;
     position: absolute;
     left: 0;
     top: 0;
