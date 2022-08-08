@@ -199,7 +199,7 @@ function ads_meta_box_save($post_id) {
         return;
     }
 
-    if (!current_user_can('edit_post')) {
+    if (!current_user_can('edit_posts')) {
         return;
     }
 
