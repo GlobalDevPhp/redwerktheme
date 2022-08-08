@@ -56,7 +56,9 @@ body:not(.singular) main > article.ads-single-card:first-of-type {
     height: 100%;
 }
 #ads-archive header h2.entry-title{
-    max-height: 90px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     overflow: hidden;
     font-size: 4rem;
 }
